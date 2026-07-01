@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	th:replace="~{baseui::mybaselayout(~{::section})}">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+<style>
+.table td, .table th {
+	vertical-align: middle;
+}
+
+.action-buttons {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 5px;
+}
+
+.action-buttons .btn {
+	min-width: 75px;
+}
+
+.short-desc {
+	max-width: 250px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+</style>
+
+</head>
+<body>
+
+	<section>
+
+		<div class="container-fluid">
+
+			<div class="row">
+
+				<div class="col-md-12">
+					<div class="alert alert-success" th:if="${msg}" th:text="${msg}"
+						role="alert"></div>
+					<div class="alert alert-danger" th:if="${error}" th:text="${error}"
+						role="alert"></div>
+
+					<h3>All Post</h3>
+
+					<table class="table table-bordered table-hover">
+						<thead class="table-dark">
+							<tr>
+								<th style="width: 5%">SNO</th>
+								<th style="width: 15%">Post Title</th>
+								<th style="width: 25%">Short Desc</th>
+								<th style="width: 15%">Posted On</th>
+								<th style="width: 10%">Status</th>
+								<th style="width: 30%">Actions</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							<tr th:each="p, status : ${postPage.content}">
+								<td th:text="${status.count}"></td>
+
+								<td th:text="${p.title}"></td>
+
+								<!-- Show only first 50 chars -->
+
+								<td class="short-desc"
+									th:utext="${#strings.length(p.shortDesc) > 50 ? #strings.substring(p.shortDesc,0,50)+'...' : p.shortDesc}">
+								</td>
+
+								<td
+									th:text="${#temporals.format(p.createdOn, 'dd-MMM-yyyy hh:mm a')}"></td>
+
+								<td><span class="badge bg-warning text-dark"
+									th:text="${p.status}"></span></td>
+
+								<td>
+									<div class="action-buttons">
+										<a sec:authorize="hasAuthority('ADMIN')"
+											th:if="${p.status=='PENDING' or p.status=='REJECTED'}"
+											class="btn btn-primary btn-sm"
+											th:href="@{/post/admin/approvePost(postId=${p.id})}">Approve</a>
+										<a sec:authorize="hasAuthority('ADMIN')"
+											th:if="${p.status=='PENDING' or p.status=='APPROVED'}"
+											class="btn btn-warning btn-sm"
+											th:href="@{/post/admin/rejectPost(postId=${p.id})}">Reject</a>
+										<a class="btn btn-success btn-sm"
+											th:href="@{/post/editpostdata(postId=${p.id})}">Edit</a> <a
+											class="btn btn-danger btn-sm"
+											th:href="@{/post/deletepost(postId=${p.id})}">Delete</a> <a
+											class="btn btn-info btn-sm text-white"
+											th:href="@{/post/viewpostdata(postId=${p.id})}">View</a>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<!-- pagination starts -->
+
+
+					<!-- No Posts Message -->
+					<div class="alert alert-info text-center"
+						th:if="${postPage.totalElements == 0}">No posts available.</div>
+
+					<!-- Pagination -->
+					<nav aria-label="Page navigation example"
+						th:if="${postPage.totalPages > 0}">
+
+						<ul class="pagination justify-content-center">
+
+							<!-- Previous -->
+							<li class="page-item"
+								th:classappend="${currentPage == 0} ? 'disabled'"><a
+								class="page-link"
+								th:href="@{/post/allpost(pageNo=${currentPage-1})}"> &laquo;
+							</a></li>
+
+							<!-- Page Numbers -->
+							<li class="page-item"
+								th:each="i : ${#numbers.sequence(1, postPage.totalPages)}"
+								th:classappend="${currentPage == i-1} ? 'active'"><a
+								class="page-link" th:href="@{/post/allpost(pageNo=${i-1})}"
+								th:text="${i}"> </a></li>
+
+							<!-- Next -->
+							<li class="page-item"
+								th:classappend="${currentPage == postPage.totalPages-1} ? 'disabled'">
+
+								<a class="page-link"
+								th:href="@{/post/allpost(pageNo=${currentPage+1})}"> &raquo;
+							</a>
+							</li>
+
+						</ul>
+					</nav>
+
+
+					<!-- pagination ends -->
+
+
+				</div>
+
+
+
+
+			</div>
+
+
+		</div>
+
+	</section>
+
+</body>
+</html>

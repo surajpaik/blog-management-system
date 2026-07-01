@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{baseui::mybaselayout(~{::section})}">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+<style>
+.table td, .table th {
+	vertical-align: middle;
+}
+
+.action-buttons {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 5px;
+}
+
+.action-buttons .btn {
+	min-width: 75px;
+}
+
+.commentMsg {
+	max-width: 250px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+</style>
+
+</head>
+<body>
+
+	<section>
+
+		<div class="container-fluid">
+
+			<div class="row">
+
+				<div class="col-md-12">
+					<div class="alert alert-success" th:if="${msg}" th:text="${msg}"
+						role="alert"></div>
+					<div class="alert alert-danger" th:if="${error}" th:text="${error}"
+						role="alert"></div>
+
+					<h3>All Comments</h3>
+
+					<table class="table table-bordered table-hover">
+						<thead class="table-dark">
+							<tr>
+								<th style="width: 5%">SNO</th>
+								<th style="width: 15%">Email</th>
+								<th style="width: 35%">Comment</th>
+								<th style="width: 15%">Commented On</th>
+								<th style="width: 20%">Title</th>
+								<th style="width: 10%">Actions</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							<tr th:each="c, status : ${commentPage.content}">
+								<td th:text="${status.count}"></td>
+
+								<td th:text="${c.email}"></td>
+
+								<!-- Show only first 50 chars -->
+
+								<td class="commentMsg"
+									th:utext="${#strings.length(c.commentMsg) > 50 ? #strings.substring(c.commentMsg,0,50)+'...' : c.commentMsg}">
+								</td>
+
+								<td
+									th:text="${#temporals.format(c.createdOn, 'dd-MMM-yyyy hh:mm a')}"></td>
+
+								<td th:text="${c.postTitle}"></td>
+
+								<td>
+									<div class="action-buttons">
+										<a class="btn btn-danger btn-sm"
+											th:href="@{/post/admin/delete-comment/{id}(id=${c.id})}">Delete</a>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<!-- pagination starts -->
+
+
+					<!-- No Posts Message -->
+					<div class="alert alert-info text-center"
+						th:if="${commentPage.totalElements == 0}">No Comments
+						available.</div>
+
+					<!-- Pagination -->
+					<nav aria-label="Page navigation example"
+						th:if="${commentPage.totalPages > 0}">
+
+						<ul class="pagination justify-content-center">
+
+							<!-- Previous -->
+							<li class="page-item"
+								th:classappend="${currentPage == 0} ? 'disabled'"><a
+								class="page-link"
+								th:href="@{/post/admin/viewAllcomments(pageNo=${currentPage-1})}">
+									&laquo; </a></li>
+
+							<!-- Page Numbers -->
+							<li class="page-item"
+								th:each="i : ${#numbers.sequence(1, commentPage.totalPages)}"
+								th:classappend="${currentPage == i-1} ? 'active'"><a
+								class="page-link"
+								th:href="@{/post/admin/viewAllcomments(pageNo=${i-1})}"
+								th:text="${i}"> </a></li>
+
+							<!-- Next -->
+							<li class="page-item"
+								th:classappend="${currentPage == commentPage.totalPages-1} ? 'disabled'">
+
+								<a class="page-link"
+								th:href="@{/post/admin/viewAllcomments(pageNo=${currentPage+1})}">
+									&raquo; </a>
+							</li>
+
+						</ul>
+					</nav>
+
+
+					<!-- pagination ends -->
+
+
+				</div>
+
+
+
+
+			</div>
+
+
+		</div>
+
+	</section>
+
+</body>
+</html>

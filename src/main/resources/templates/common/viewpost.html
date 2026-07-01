@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{baseui::mybaselayout(~{::section})}">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+	<section>
+
+		<div class="container">
+
+			<div class="row">
+
+				<div class="col-12">
+
+
+					<div class="card blog-details-card shadow-sm mb-4">
+
+						<!-- Featured Image -->
+						<img
+							th:src="@{'/postfiles/' + ${post.id} + '/' + ${post.postImageName}}"
+							class="blog-details-image" alt="Blog Image">
+
+						<div class="card-body p-4">
+
+							<!-- Category -->
+							<span class="category-badge" th:text="${post.categoryName}">
+							</span>
+
+							<!-- Title -->
+							<h1 class="blog-details-title mt-3" th:text="${post.title}">
+							</h1>
+
+							<!-- Author / Date / Reading Time -->
+							<div class="blog-meta mt-3 mb-4">
+
+								<span> <i class="bi bi-person-circle"></i> <span
+									th:text="${post.authorName}"></span>
+								</span> <span class="mx-3"> <i class="bi bi-calendar-event"></i>
+									<span
+									th:text="${#temporals.format(post.createdOn,'dd MMM yyyy')}"></span>
+								</span> <span> <i class="bi bi-clock"></i> <span
+									th:text="${post.readingTime + ' min read'}"></span>
+								</span>
+
+							</div>
+
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+	</section>
+
+</body>
+</html>

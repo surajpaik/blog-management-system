@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	th:replace="~{baseui::mybaselayout(~{::section})}">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+	<section>
+
+
+		<div class="container-fluid mt-5">
+
+			<div class="row">
+
+				<div class="col-md-10 offset-md-1">
+
+					<h3>Add Blog Category</h3>
+					<div class="card">
+						<div class="card-body">
+
+							<form th:action="@{/admin/category/save}" method="post"
+								th:object="${category}">
+
+								<div class="mb-3">
+									<label for="pt" class="form-label">Category Name</label> <input
+										type="text" th:field="*{name}" class="form-control" id="pt"
+										aria-describedby="emailHelp">
+									<div class="text-danger" th:if="${#fields.hasErrors('name')}">
+										<span th:errors="*{name}"></span>
+									</div>
+								</div>
+
+
+								<button type="submit" class="btn btn-primary">Add</button>
+							</form>
+							
+							<div class="alert alert-success" th:if="${msg}" th:text="${msg}"
+								role="alert"></div>
+							<div class="alert alert-danger" th:if="${error}"
+								th:text="${error}" role="alert"></div>
+
+
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+
+		</div>
+
+	</section>
+
+</body>
+</html>

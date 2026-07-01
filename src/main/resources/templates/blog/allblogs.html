@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+	th:replace="~{baseui::mybaselayout(~{::section})}">
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+	<section>
+
+		<div class="container mt-4">
+
+			<div th:if="${blogPage.totalElements > 0}">
+
+
+				<!-- Search Card Starts -->
+				<!-- Search -->
+				<div class="row mb-4">
+					<div class="col-12">
+
+						<div class="card shadow-sm">
+							<div class="card-body">
+
+								<form th:action="@{/searchblogpost}" class="row g-2">
+
+									<div class="col-md-10">
+										<input type="search" name="search"
+											class="form-control search-input"
+											placeholder="Search blogs..." th:value="${search}">
+									</div>
+
+									<div class="col-md-2">
+										<button class="btn btn-primary w-100">
+											<i class="bi bi-search"></i> Search
+										</button>
+									</div>
+
+								</form>
+
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+				<!-- Categories -->
+				<div class="row mb-4">
+					<div class="col-12">
+
+						<div class="card shadow-sm">
+							<div class="card-body">
+
+								<div class="d-flex flex-wrap gap-2 justify-content-center">
+
+									<a th:href="@{/}" class="btn"
+										th:classappend="${selectedcategoryid == null} ? 'btn-primary' : 'btn-outline-primary'">
+										All </a> <a th:each="cat : ${categories}"
+										th:href="@{'/category/' + ${cat.id}}" class="btn"
+										th:classappend="${selectedcategoryid == cat.id} ? 'btn-primary' : 'btn-outline-primary'">
+
+										<span th:text="${cat.name}"></span>
+
+									</a>
+
+								</div>
+
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+
+
+				<!-- Blog Cards -->
+				<div class="row">
+
+					<div th:each="p:${blogPage.content}" class="col-lg-4 col-md-6 mb-4">
+
+						<div class="card blog-card h-100">
+
+							<img th:src="@{'/postfiles/'+${p.id}+'/'+${p.postImageName}}"
+								class="card-img-top blog-image" alt="Blog Image">
+
+							<div class="card-body d-flex flex-column">
+
+								<span class="category-badge" th:text="${p.categoryName}">
+								</span>
+
+								<h5 class="card-title mt-2">
+									<a th:href="@{'/blogpost/'+${p.id}+'/'+${p.url}}"
+										class="blog-title" th:text="${p.title}"> </a>
+								</h5>
+
+								<div class="author-name mb-3">
+
+									<i class="bi bi-person-circle"></i> <span
+										th:text="${p.authorName}"></span> <span class="mx-2">•</span>
+									<i class="bi bi-clock"></i> <span
+										th:text="${p.readingTime + ' min read'}"></span>
+
+								</div>
+
+								<p class="card-text"
+									th:text="${#strings.length(p.shortDesc) > 50 ? #strings.substring(p.shortDesc,0,50)+'...' : p.shortDesc}">
+								</p>
+
+								<div class="d-flex justify-content-between mt-auto">
+
+									<small> 📅 <span
+										th:text="${#temporals.format(p.createdOn,'dd MMM yyyy')}"></span>
+
+									</small> <small> 💬 <span th:text="${p.commentCount}"></span>
+
+										Comments
+
+									</small>
+
+								</div>
+
+								<a th:href="@{'/blogpost/'+${p.id}+'/'+${p.url}}"
+									class="btn btn-primary mt-3"> Read More <i
+									class="bi bi-arrow-right ms-2"></i>
+
+								</a>
+
+							</div>
+
+						</div>
+
+					</div>
+
+				</div>
+
+				<!-- pagination starts -->
+
+
+
+				<!-- Pagination -->
+				<div class="row mt-4">
+
+					<div class="col-12">
+						<nav class="mt-5" th:if="${blogPage.totalPages > 0}">
+
+							<ul class="pagination justify-content-center custom-pagination">
+
+								<!-- Previous -->
+								<li class="page-item prev-next"
+									th:classappend="${currentPage == 0} ? 'disabled'">
+									<!-- Home --> <a
+									th:if="${search == null and selectedcategoryid == null and currentPage > 0}"
+									class="page-link" th:href="@{/(pageNo=${currentPage-1})}">
+										<i class="bi bi-arrow-left"></i> <span class="ms-2">Previous</span>
+								</a> <!-- Category --> <a
+									th:if="${selectedcategoryid != null and currentPage > 0}"
+									class="page-link"
+									th:href="@{/category/{id}(id=${selectedcategoryid},pageNo=${currentPage-1})}">
+										<i class="bi bi-arrow-left"></i> <span class="ms-2">Previous</span>
+								</a> <!-- Search --> <a
+									th:if="${search != null and currentPage > 0}" class="page-link"
+									th:href="@{/searchblogpost(search=${search},pageNo=${currentPage-1})}">
+										<i class="bi bi-arrow-left"></i> <span class="ms-2">Previous</span>
+								</a> <span class="page-link" th:if="${currentPage == 0}"> <i
+										class="bi bi-arrow-left"></i> <span class="ms-2">Previous</span>
+								</span>
+
+								</li>
+
+								<!-- Page Numbers -->
+								<li class="page-item"
+									th:each="i : ${#numbers.sequence(1, blogPage.totalPages)}"
+									th:classappend="${currentPage == i-1} ? 'active'">
+									<!-- Home --> <a
+									th:if="${search == null and selectedcategoryid == null}"
+									class="page-link" th:text="${i}" th:href="@{/(pageNo=${i-1})}">
+								</a> <!-- Category --> <a th:if="${selectedcategoryid != null}"
+									class="page-link" th:text="${i}"
+									th:href="@{/category/{id}(id=${selectedcategoryid},pageNo=${i-1})}">
+								</a> <!-- Search --> <a th:if="${search != null}" class="page-link"
+									th:text="${i}"
+									th:href="@{/searchblogpost(search=${search},pageNo=${i-1})}">
+								</a>
+
+								</li>
+
+								<!-- Next -->
+								<li class="page-item prev-next"
+									th:classappend="${currentPage == blogPage.totalPages-1} ? 'disabled'">
+
+									<!-- Home --> <a
+									th:if="${search == null and selectedcategoryid == null and currentPage < blogPage.totalPages-1}"
+									class="page-link" th:href="@{/(pageNo=${currentPage+1})}">
+										<span class="me-2">Next</span> <i class="bi bi-arrow-right"></i>
+								</a> <!-- Category --> <a
+									th:if="${selectedcategoryid != null and currentPage < blogPage.totalPages-1}"
+									class="page-link"
+									th:href="@{/category/{id}(id=${selectedcategoryid},pageNo=${currentPage+1})}">
+										<span class="me-2">Next</span> <i class="bi bi-arrow-right"></i>
+								</a> <!-- Search --> <a
+									th:if="${search != null and currentPage < blogPage.totalPages-1}"
+									class="page-link"
+									th:href="@{/searchblogpost(search=${search},pageNo=${currentPage+1})}">
+										<span class="me-2">Next</span> <i class="bi bi-arrow-right"></i>
+								</a> <span class="page-link"
+									th:if="${currentPage == blogPage.totalPages-1}"> <span
+										class="me-2">Next</span> <i class="bi bi-arrow-right"></i>
+								</span>
+
+								</li>
+
+							</ul>
+
+						</nav>
+					</div>
+
+				</div>
+			</div>
+			<!-- pagination ends -->
+
+
+			<div class="row" th:if="${blogPage.totalElements == 0}">
+
+				<div class="col-12">
+
+					<div class="empty-blog-page">
+
+						<i class="bi bi-journal-richtext display-1 text-primary"></i>
+
+						<h2 class="mt-3">No Posts Available</h2>
+
+						<p class="text-muted">There are no approved blog posts yet.</p>
+
+						<a sec:authorize="hasAuthority('GUEST')"
+							th:href="@{/post/newpost}" class="btn btn-primary mt-3">
+							Write Your First Blog </a>
+
+					</div>
+
+				</div>
+
+			</div>
+		</div>
+	</section>
+</body>
