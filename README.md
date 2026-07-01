@@ -113,7 +113,7 @@ Before running the project, make sure you have:
 ## Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR_GITHUB_USERNAME/blog-management-system.git
+git clone https://github.com/surajpaik/blog-management-system.git
 ```
 
 Move to the project directory.
